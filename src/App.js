@@ -1,63 +1,52 @@
 import { useEffect, useState } from "react";
+import "./App.css";
+import Board from "./components/board";
+import Dash from "./components/Dash";
 
-const Board = ({ word }) => {
-  const [rows, setRows] = useState(
-    Array(10)
-      .fill()
-      .map(() => Array(5).fill(""))
-  );
-  const [currentRow, setCurrentRow] = useState(0);
-  const [currentCol, setCurrentCol] = useState(0);
+function App() {
+  const [word, setWord] = useState("");
+  const [gameStatus, setGameStatus] = useState("playing");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const board = document.getElementById("board");
-    if (board) board.focus();
+    fetchRandomWord().then(setWord);
   }, []);
 
-  const handleKeyPress = (e) => {
-    const key = e.key.toUpperCase();
+  const fetchRandomWord = async () => {
+    const response = await fetch(
+      "https://random-word-api.herokuapp.com/word?number=1&length=5"
+    );
+    const words = await response.json();
+    console.log(words);
+    return words[0].toUpperCase();
+  };
 
-    if (key >= "A" && key <= "Z" && currentCol < 5) {
-      const newRows = rows.map((r) => [...r]);
-      newRows[currentRow][currentCol] = key;
-      setRows(newRows);
-      setCurrentCol(currentCol + 1);
-    }
+  const handleGameOver = () => {
+    setGameStatus("lose");
+  };
 
-    if (e.key === "Backspace" && currentCol > 0) {
-      const newRows = rows.map((r) => [...r]);
-      newRows[currentRow][currentCol - 1] = "";
-      setRows(newRows);
-      setCurrentCol(currentCol - 1);
-    }
-
-    if (e.key === "Enter" && currentCol === 5) {
-      setCurrentRow(currentRow + 1);
-      setCurrentCol(0);
-    }
+  const handleWin = () => {
+    setGameStatus("win");
+  };
+  const showMessage = (msg) => {
+    setMessage(msg);
+    setTimeout(() => setMessage(""), 2000);
   };
 
   return (
-    <div
-      id="board"
-      tabIndex="0"
-      onKeyDown={handleKeyPress}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        outline: "none",
-      }}
-    >
-      {rows.map((row, r) => (
-        <div key={r} style={{ display: "flex" }}>
-          {row.map((cell, c) => (
-            <div key={c}>{cell}</div>
-          ))}
-        </div>
-      ))}
+    <div className="App">
+      <h1 id="title">The A1B1 Game</h1>
+      <hr />
+      <br />
+      <Dash word={word} onWin={handleWin} />
+      <Board
+        word={word}
+        onGameOver={handleGameOver}
+        onWin={handleWin}
+        showMessage={showMessage}
+      />
     </div>
   );
-};
+}
 
-export default Board;
+export default App;
