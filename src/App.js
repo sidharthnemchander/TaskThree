@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Board from "./components/Board";
+import Board from "./components/board";
 import Dash from "./components/Dash";
 import GameOver from "./components/GameOver";
 import HelpSlider from "./components/HelpSlider";
@@ -19,7 +19,7 @@ function App() {
 
   const fetchRandomWord = async () => {
     const response = await fetch(
-      "https://random-word-api.herokuapp.com/word?number=1&length=5"
+      "https://random-word-api.vercel.app/api?words=1&length=5"
     );
     const words = await response.json();
     console.log(words);
