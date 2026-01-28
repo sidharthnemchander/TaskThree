@@ -3,18 +3,16 @@ import Hint from "./Hint";
 import Tile from "./Tile";
 
 const Board = ({ word, onGameOver, onWin, showMessage }) => {
-  // Initialize with arrays that can be individually modified
   const [rows, setRows] = useState(
     Array(10)
       .fill()
-      .map(() => Array(5).fill(""))
+      .map(() => Array(5).fill("")),
   );
   const [currentRow, setCurrentRow] = useState(0);
   const [currentCol, setCurrentCol] = useState(0);
-  const [visibleRows, setVisibleRows] = useState(1); // Track number of visible rows
-  const [rowHints, setRowHints] = useState(Array(10).fill("")); // Store hints for each row
+  const [visibleRows, setVisibleRows] = useState(1);
+  const [rowHints, setRowHints] = useState(Array(10).fill(""));
 
-  // Use effect to set focus on the board
   useEffect(() => {
     const boardElement = document.getElementById("board");
     if (boardElement) {
@@ -27,14 +25,12 @@ const Board = ({ word, onGameOver, onWin, showMessage }) => {
 
     if (keyPressed.length === 1 && keyPressed >= "A" && keyPressed <= "Z") {
       if (currentRow < 10 && currentCol < 5) {
-        // Create a deep copy of the rows array
         const newRows = rows.map((row) => [...row]);
         newRows[currentRow][currentCol] = keyPressed;
         setRows(newRows);
         setCurrentCol(currentCol + 1);
       }
     } else if (e.key === "Backspace" && currentCol > 0) {
-      // Create a deep copy of the rows array
       const newRows = rows.map((row) => [...row]);
       newRows[currentRow][currentCol - 1] = "";
       setRows(newRows);
@@ -50,7 +46,6 @@ const Board = ({ word, onGameOver, onWin, showMessage }) => {
     if (isValid) {
       const hint = CheckLogic(userWord, word);
 
-      // Save the hint for the current row
       const newRowHints = [...rowHints];
       newRowHints[currentRow] = hint;
       setRowHints(newRowHints);
@@ -60,7 +55,7 @@ const Board = ({ word, onGameOver, onWin, showMessage }) => {
       } else {
         setCurrentRow(currentRow + 1);
         setCurrentCol(0);
-        setVisibleRows(visibleRows + 1); // Increase visible rows
+        setVisibleRows(visibleRows + 1);
         if (currentRow === 9) {
           onGameOver();
         }
@@ -76,7 +71,7 @@ const Board = ({ word, onGameOver, onWin, showMessage }) => {
 
   const checkWordValidity = async (u_word) => {
     const response = await fetch(
-      `https://api.dictionaryapi.dev/api/v2/entries/en/${u_word}`
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${u_word}`,
     );
     return response.ok;
   };
@@ -109,11 +104,10 @@ const Board = ({ word, onGameOver, onWin, showMessage }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        outline: "none", // Remove focus outline
+        outline: "none",
       }}
     >
       {rows.map((row, rowIndex) =>
-        // Only render rows up to the current visible count
         rowIndex < visibleRows ? (
           <div key={rowIndex} className="row">
             {row.map((tile, colIndex) => (
@@ -121,7 +115,7 @@ const Board = ({ word, onGameOver, onWin, showMessage }) => {
             ))}
             <Hint hint={rowHints[rowIndex]} />
           </div>
-        ) : null
+        ) : null,
       )}
     </div>
   );

@@ -15,11 +15,9 @@ const Dash = ({ word, onWin }) => {
     }
   }, [errorCount]);
 
-  // Handle click outside of dash
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (inputRef.current && !inputRef.current.contains(event.target)) {
-        // Focus the board when clicked outside
         const boardElement = document.getElementById("board");
         if (boardElement) {
           boardElement.focus();
@@ -37,7 +35,7 @@ const Dash = ({ word, onWin }) => {
   const handleDashClick = (index) => {
     if (isDisabled) return;
     setFocusedDash(index);
-    // Focus the hidden input to capture keystrokes
+
     const input = document.querySelector(".dash-input");
     if (input) {
       input.focus();
@@ -49,37 +47,29 @@ const Dash = ({ word, onWin }) => {
 
     const keyPressed = e.target.value.toUpperCase();
     if (keyPressed.length === 1 && keyPressed >= "A" && keyPressed <= "Z") {
-      // Create a copy of the current dashword
       const newDashword = [...dashword];
 
-      // Check if the letter is correct
       if (word[focusedDash] !== keyPressed) {
-        // Incorrect letter - show temp letter then reset
         setTempLetter({
           index: focusedDash,
           letter: keyPressed,
         });
 
-        // Reset letter after 1 second
         setTimeout(() => {
           setTempLetter(null);
           newDashword[focusedDash] = "";
           setDashword(newDashword);
         }, 350);
 
-        // Increment error count
         setErrorCount((prev) => Math.min(prev + 1, 3));
       } else {
-        // Correct letter
         newDashword[focusedDash] = keyPressed;
         setDashword(newDashword);
       }
 
       e.target.value = "";
 
-      // Check if all letters are correct
       if (newDashword.every((letter, index) => letter === word[index])) {
-        // Trigger win condition
         onWin();
       }
     }
